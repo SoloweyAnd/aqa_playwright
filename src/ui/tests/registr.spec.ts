@@ -1,6 +1,6 @@
 import test, { expect } from "@playwright/test";
 
-test.describe("[UI][1.2 Smoke] Registration form", () => {
+test.describe("[UI][1.2. Smoke] Registration form", () => {
   const validValues = {
     firstName: "Andrei",
     lastName: "Salaveika",
