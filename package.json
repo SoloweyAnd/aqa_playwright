@@ -1,0 +1,21 @@
+{
+  "name": "aqa_playwright",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test:ui": "npx playwright test",
+    "ui-mode": "npx playwright test --ui"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@eslint/js": "^9.24.0",
+    "@playwright/test": "^1.51.1",
+    "@types/node": "^22.14.1",
+    "eslint": "^9.24.0",
+    "globals": "^16.0.0",
+    "typescript-eslint": "^8.30.1"
+  }
+}
