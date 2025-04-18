@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-test.describe("[UI] [1.1 Smoke] Registration", () => {
+test.describe("[UI] [1.1. Smoke] Registration", () => {
   const validCredentials = {
     username: "tomsmith",
     password: "SuperPassword",
