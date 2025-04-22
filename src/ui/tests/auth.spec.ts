@@ -11,7 +11,7 @@ test.describe("[UI] [1.1. Smoke] Registration", () => {
     password: "abc",
   };
 
-  async function fillCredentials(page, username: string, password: string) {
+  async function submitUser(page, username: string, password: string) {
     await page.locator("#userNameOnRegister").fill(username);
     await page.locator("#passwordOnRegister").fill(password);
     await page.locator("#register").click();
@@ -23,7 +23,7 @@ test.describe("[UI] [1.1. Smoke] Registration", () => {
   });
 
   test("Register with valid credentials", async ({ page }) => {
-    await fillCredentials(
+    await submitUser(
       page,
       validCredentials.username,
       validCredentials.password
@@ -34,7 +34,7 @@ test.describe("[UI] [1.1. Smoke] Registration", () => {
   });
 
   test("Register with invalid user name", async ({ page }) => {
-    await fillCredentials(
+    await submitUser(
       page,
       invalidUserCredentials.username,
       validCredentials.password
@@ -45,7 +45,7 @@ test.describe("[UI] [1.1. Smoke] Registration", () => {
   });
 
   test("Register with invalid password", async ({ page }) => {
-    await fillCredentials(
+    await submitUser(
       page,
       validCredentials.username,
       invalidUserCredentials.password
@@ -56,14 +56,14 @@ test.describe("[UI] [1.1. Smoke] Registration", () => {
   });
 
   test("Register with empty username", async ({ page }) => {
-    await fillCredentials(page, "", validCredentials.password);
+    await submitUser(page, "", validCredentials.password);
     await expect(page.locator("#errorMessageOnRegister")).toContainText(
       "Username is required"
     );
   });
 
   test("Register with empty password", async ({ page }) => {
-    await fillCredentials(page, validCredentials.username, "");
+    await submitUser(page, validCredentials.username, "");
     await expect(page.locator("#errorMessageOnRegister")).toContainText(
       "Password is required"
     );
