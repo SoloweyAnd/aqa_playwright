@@ -14,6 +14,13 @@ test.describe("[UI] [anatoly-karpovich] Task-2", () => {
     await page.locator("#emailinput").fill(email);
     await page.locator("#passwordinput").fill(password);
     await page.getByRole("button", { name: "Login" }).click();
+
+    await page.waitForFunction(
+      () => {
+        return document.querySelectorAll(".spinner-border").length === 0;
+      },
+      { timeout: 5000 }
+    );
   }
 
   test("Login with valid credentials", async ({ page }) => {
