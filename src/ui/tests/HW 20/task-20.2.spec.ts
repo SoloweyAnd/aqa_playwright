@@ -1,3 +1,14 @@
+// Разработать тест со следующими шагами:
+// https://anatoly-karpovich.github.io/demo-shopping-cart/
+//   - добавить продукты 2,4,6,8,10
+//   - завалидировать бейдж с количеством
+//   - открыть чекаут
+//   - завалидировать сумму и продукты
+//   - ввести все найденные вами промокоды (вспоминаем первую лекцию)
+//   - завалидировать конечную сумму
+//   - зачекаутиться
+//   - завалидировать сумму
+
 import test, { expect, Page } from "@playwright/test";
 
 test.describe("[UI] [Shopping Cart] [E2E]", () => {
@@ -49,12 +60,17 @@ test.describe("[UI] [Shopping Cart] [E2E]", () => {
       await applyPromoCode(promo, page);
     }
 
+    const totalDiscountPercent = await calculateTotalDiscount(page);
+    const finalPriceAfterDiscount = total * (1 - totalDiscountPercent / 100);
+    const discountAmount = total - finalPriceAfterDiscount;
     await expect(page.locator("#total-price")).toHaveText(
-      "$1412.50 (-$4237.5)"
+      `$${finalPriceAfterDiscount.toFixed(2)} (-$${discountAmount})`
     );
 
-    await page.getByRole("button", { name: "Checkout" }).click();
-    await expect(page.locator("span.text-muted")).toHaveText("$1412.50");
+    await page.locator("#continue-to-checkout-button").click();
+    await expect(page.locator("span.text-muted")).toHaveText(
+      `$${finalPriceAfterDiscount.toFixed(2)}`
+    );
   });
 
   function getAddToCartButton(productName: string, page: Page) {
@@ -82,5 +98,18 @@ test.describe("[UI] [Shopping Cart] [E2E]", () => {
     const spinner = page.locator(".spinner-border");
     await expect(spinner).toBeVisible();
     await expect(spinner).toBeHidden();
+  }
+
+  async function calculateTotalDiscount(page: Page): Promise<number> {
+    const rebateItemsLocator = page.locator("#rebates-list small");
+    const rebateTextContents = await rebateItemsLocator.allTextContents();
+
+    const totalDiscount = rebateTextContents.reduce((sum, text) => {
+      const discountTextWithoutSymbols = text.replace(/[-%]/g, "");
+      const discountPercentage = parseFloat(discountTextWithoutSymbols) || 0;
+      return sum + discountPercentage;
+    }, 0);
+
+    return totalDiscount;
   }
 });
