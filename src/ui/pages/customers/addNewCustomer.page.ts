@@ -1,6 +1,5 @@
 import { ICustomer } from "types/customer.types";
 import { SalesPortalPage } from "../salesPortal.page";
-import { Locator } from "@playwright/test";
 
 export class AddNewCustomerPage extends SalesPortalPage {
   emailInput = this.page.locator("#inputEmail");
@@ -19,7 +18,8 @@ export class AddNewCustomerPage extends SalesPortalPage {
   async fillInputs(customer: Partial<ICustomer>) {
     customer.email && (await this.emailInput.fill(customer.email));
     customer.name && (await this.nameInput.fill(customer.name));
-    customer.country && (await this.countryInput.selectOption(customer.country));
+    customer.country &&
+      (await this.countryInput.selectOption(customer.country));
     customer.city && (await this.cityInput.fill(customer.city));
     customer.street && (await this.streetInput.fill(customer.street));
     customer.house && (await this.houseInput.fill(customer.house.toString()));
