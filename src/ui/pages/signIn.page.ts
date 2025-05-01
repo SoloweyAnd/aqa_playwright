@@ -1,13 +1,13 @@
 import { SalesPortalPage } from "./salesPortal.page";
 import { Page, Locator } from "@playwright/test";
 import { ICredentials } from "types/credentials.types";
+import { SALES_PORTAL_URL } from "config/environment";
 
 export class SignInPage extends SalesPortalPage {
-  public emailInput: Locator;
-  public passwordInput: Locator;
-  public loginButton: Locator;
-  public uniqueElement: Locator;
-  public authUrl = "https://anatoly-karpovich.github.io/aqa-course-project/#";
+  readonly emailInput: Locator;
+  readonly passwordInput: Locator;
+  readonly loginButton: Locator;
+  readonly uniqueElement: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -19,7 +19,7 @@ export class SignInPage extends SalesPortalPage {
   }
 
   async openAuthPage() {
-    await this.page.goto(this.authUrl);
+    await this.page.goto(SALES_PORTAL_URL);
   }
 
   async fillCredentials(email: string, password: string) {
