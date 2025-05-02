@@ -1,27 +1,17 @@
-// Разработать е2е теста со следующими шагами:
-//  - Открыть url https://anatoly-karpovich.github.io/aqa-course-project/#
-//  - Войти в приложения используя ваши учетные данные
-//  - Создать покупателя (модуль Customers)
-//  - Верифицировать появившуюся нотификацию
-//  - Верифицировать созданного покупателя в таблице (сравнить все имеющиеся поля, покупатель должен быть самым верхним)
-
-import test, { expect } from "@playwright/test";
-import { SignInPage } from "ui/pages/signIn.page";
-import { HomePage } from "ui/pages/home.page";
-import { CustomersPage } from "ui/pages/customers/customers.page";
-import { AddNewCustomerPage } from "ui/pages/customers/addNewCustomer.page";
+import { test, expect } from "fixtures/pages.fixture";
 import { generateCustomerData } from "data/customers/generateCustomer.data";
 import { NOTIFICATIONS } from "data/notifications.data";
 import _ from "lodash";
 import { USER_LOGIN, USER_PASSWORD } from "config/environment";
 
 test.describe("[UI] [Sales Portal] [E2E]", async () => {
-  test("Should create customer", async ({ page }) => {
-    const signInPage = new SignInPage(page);
-    const homePage = new HomePage(page);
-    const customersPage = new CustomersPage(page);
-    const addNewCustomerPage = new AddNewCustomerPage(page);
-
+  test("Should create and delete customer", async ({
+    customersPage,
+    homePage,
+    signInPage,
+    addNewCustomerPage,
+    deleteModalPage,
+  }) => {
     await signInPage.openAuthPage();
     await signInPage.waitForOpened();
     await signInPage.logIn({ username: USER_LOGIN, password: USER_PASSWORD });
@@ -44,5 +34,12 @@ test.describe("[UI] [Sales Portal] [E2E]", async () => {
     expect(actualCustomerData).toEqual(
       _.pick(data, ["email", "name", "country"])
     );
+
+    await customersPage.clickTableAction(data.email, "delete");
+    await expect(deleteModalPage.uniqueElement).toBeVisible();
+    await deleteModalPage.apllyDeleteButton.click();
+    await customersPage.waitForOpened();
+    await customersPage.waitForNotification(NOTIFICATIONS.CUSTOMER_DELETED);
+    await expect(customersPage.tableRowByEmail(data.email)).not.toBeVisible();
   });
 });
