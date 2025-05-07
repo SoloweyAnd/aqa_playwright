@@ -2,7 +2,7 @@ import { test as base } from "@playwright/test";
 import { AddNewCustomerPage } from "ui/pages/customers/addNewCustomer.page";
 import { CustomersPage } from "ui/pages/customers/customers.page";
 import { HomePage } from "ui/pages/home.page";
-import { DeleteModalPage } from "ui/pages/modals/customers.modals/delete.modal.page";
+import { DeleteModalPage } from "ui/pages/modals/customers/delete.modal.page";
 import { SignInPage } from "ui/pages/signIn.page";
 
 interface ISalesPortalPages {
