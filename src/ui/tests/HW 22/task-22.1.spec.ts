@@ -1,20 +1,17 @@
-import { test, expect } from "fixtures/pages.fixture";
 import { generateCustomerData } from "data/customers/generateCustomer.data";
 import { NOTIFICATIONS } from "data/notifications.data";
 import _ from "lodash";
-import { USER_LOGIN, USER_PASSWORD } from "config/environment";
+import { expect, test } from "fixtures/businessSteps.fixture";
 
 test.describe("[UI] [Sales Portal] [E2E]", async () => {
   test("Should create and delete customer", async ({
     customersPage,
     homePage,
-    signInPage,
+    loginAsLocalUser,
     addNewCustomerPage,
     deleteModalPage,
   }) => {
-    await signInPage.openAuthPage();
-    await signInPage.waitForOpened();
-    await signInPage.logIn({ username: USER_LOGIN, password: USER_PASSWORD });
+    await loginAsLocalUser();
 
     await homePage.waitForOpened();
     await homePage.clickModuleButton("Customers");
@@ -36,8 +33,9 @@ test.describe("[UI] [Sales Portal] [E2E]", async () => {
     );
 
     await customersPage.clickTableAction(data.email, "delete");
-    await expect(deleteModalPage.uniqueElement).toBeVisible();
+    await deleteModalPage.waitForOpened();
     await deleteModalPage.apllyDeleteButton.click();
+    await deleteModalPage.waitForClosed();
     await customersPage.waitForOpened();
     await customersPage.waitForNotification(NOTIFICATIONS.CUSTOMER_DELETED);
     await expect(customersPage.tableRowByEmail(data.email)).not.toBeVisible();

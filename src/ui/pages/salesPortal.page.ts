@@ -1,10 +1,10 @@
 import { expect, Locator, Page } from "@playwright/test";
+import { SALES_PORTAL_URL } from "config/environment";
 
 export abstract class SalesPortalPage {
   spinner: Locator;
   notification: Locator;
   abstract uniqueElement: Locator;
-  protected shouldWaitForSpinner = true;
 
   constructor(protected page: Page) {
     this.spinner = page.locator(".spinner-border");
@@ -13,7 +13,7 @@ export abstract class SalesPortalPage {
 
   async waitForOpened() {
     await expect(this.uniqueElement).toBeVisible();
-    this.shouldWaitForSpinner && (await this.waitForSpinner());
+    await this.waitForSpinner();
   }
 
   async waitForSpinner() {
@@ -22,5 +22,9 @@ export abstract class SalesPortalPage {
 
   async waitForNotification(text: string) {
     await expect(this.notification.last()).toHaveText(text);
+  }
+
+  async openPortal() {
+    this.page.goto(SALES_PORTAL_URL);
   }
 }
