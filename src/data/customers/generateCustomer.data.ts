@@ -5,8 +5,8 @@ import { getRandromEnumValue } from "utils/enum.utils";
 
 export function generateCustomerData(params?: Partial<ICustomer>): ICustomer {
   return {
-    email: `saTest${Date.now()}@gmail.com`,
-    name: `saTest ${faker.string.alpha(35)}`,
+    email: `test${Date.now()}@gmail.com`,
+    name: `Test ${faker.string.alpha(35)}`,
     country: getRandromEnumValue(COUNTRIES),
     city: `City ${faker.string.alpha(15)}`,
     street: `Street ${faker.string.alphanumeric(33)}`,

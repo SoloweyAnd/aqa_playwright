@@ -17,7 +17,7 @@ import { validateSchema } from "utils/validations/schemaValidation";
 test.describe("[API] [Customer] [Get all customers]", () => {
   let token = "";
 
-  test("Create and find customers with smoke data", async ({ request }) => {
+  test("Verify created customer in list", async ({ request }) => {
     const loginResponse = await request.post(
       apiConfig.BASE_URL + apiConfig.ENDPOINTS.LOGIN,
       {
@@ -42,6 +42,7 @@ test.describe("[API] [Customer] [Get all customers]", () => {
         },
       }
     );
+    const customerBody = await customerResponse.json();
     expect.soft(customerResponse.status()).toBe(STATUS_CODES.CREATED);
 
     const getAllCustomersResponse = await request.get(
@@ -56,8 +57,19 @@ test.describe("[API] [Customer] [Get all customers]", () => {
     const body = await getAllCustomersResponse.json();
     validateSchema(customersListSchema, body);
     expect.soft(getAllCustomersResponse.status()).toBe(STATUS_CODES.OK);
-    //проверить, что в массиве тела респонса есть созданный кастомер
+    expect.soft(body.Customers).toContainEqual(customerBody.Customer);
     expect.soft(body.ErrorMessage).toBe(null);
     expect.soft(body.IsSuccess).toBe(true);
+
+    const response = await request.delete(
+      apiConfig.BASE_URL +
+        apiConfig.ENDPOINTS.CUSTOMER_BY_ID(customerBody.Customer._id),
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    expect.soft(response.status()).toBe(STATUS_CODES.DELETED);
   });
 });
