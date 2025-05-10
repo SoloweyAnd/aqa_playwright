@@ -1,7 +1,7 @@
 // Написать смоук API тест на логин
 //   - создать и проверить схему
 //   - проверить статус
-//   - проверить наличие токена в хедерах
+//  - проверить наличие токена в хедерах
 import { test, expect } from "fixtures/contollers.fixture";
 import { USER_LOGIN, USER_PASSWORD } from "config/environment";
 import { userSchema } from "data/customers/schemas/user/user.schema";
