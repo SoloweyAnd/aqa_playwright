@@ -56,6 +56,7 @@ test.describe("[API] [Customer] [Get all customers]", () => {
       )
       .toEqual(customerData);
   });
+
   test.afterEach(async ({ customersController }) => {
     if (!id) return;
     const response = await customersController.delete(id, token);
