@@ -6,70 +6,59 @@
 //   - проверить статус done
 //   - проверить, что в массиве тела респонса есть созданный кастомер
 //   - Проверить поля IsSuccess и ErrorMessage done
-import test, { expect } from "@playwright/test";
-import { apiConfig } from "config/api-config";
+import { test, expect } from "fixtures/contollers.fixture";
 import { USER_LOGIN, USER_PASSWORD } from "config/environment";
 import { generateCustomerData } from "data/customers/generateCustomer.data";
 import { customersListSchema } from "data/customers/schemas/customer/customers.schema";
 import { STATUS_CODES } from "data/statusCodes";
+import _ from "lodash";
+import { ICustomer } from "types/customer.types";
 import { validateSchema } from "utils/validations/schemaValidation";
+import { validateResponse } from "utils/validations/responseValidation";
 
 test.describe("[API] [Customer] [Get all customers]", () => {
   let token = "";
+  let id = "";
 
-  test("Verify created customer in list", async ({ request }) => {
-    const loginResponse = await request.post(
-      apiConfig.BASE_URL + apiConfig.ENDPOINTS.LOGIN,
-      {
-        data: { username: USER_LOGIN, password: USER_PASSWORD },
-        headers: {
-          "content-type": "application/json",
-        },
-      }
-    );
-    const headers = loginResponse.headers();
+  test("Verify created customer in list", async ({
+    customersController,
+    signInController,
+  }) => {
+    const response = await signInController.signIn({
+      username: USER_LOGIN,
+      password: USER_PASSWORD,
+    });
+
+    const { status, headers } = response;
     token = headers["authorization"];
-    expect.soft(loginResponse.status()).toBe(STATUS_CODES.OK);
+    expect.soft(status).toBe(STATUS_CODES.OK);
 
     const customerData = generateCustomerData();
-    const customerResponse = await request.post(
-      apiConfig.BASE_URL + apiConfig.ENDPOINTS.CUSTOMERS,
-      {
-        data: customerData,
-        headers: {
-          "content-type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      }
+    const customerResponse = await customersController.create(
+      customerData,
+      token
     );
-    const customerBody = await customerResponse.json();
-    expect.soft(customerResponse.status()).toBe(STATUS_CODES.CREATED);
+    id = customerResponse.body.Customer._id;
 
-    const getAllCustomersResponse = await request.get(
-      apiConfig.BASE_URL + apiConfig.ENDPOINTS.CUSTOMERS,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "content-type": "application/json",
-        },
-      }
-    );
-    const body = await getAllCustomersResponse.json();
-    validateSchema(customersListSchema, body);
-    expect.soft(getAllCustomersResponse.status()).toBe(STATUS_CODES.OK);
-    expect.soft(body.Customers).toContainEqual(customerBody.Customer);
-    expect.soft(body.ErrorMessage).toBe(null);
-    expect.soft(body.IsSuccess).toBe(true);
+    validateResponse(customerResponse, STATUS_CODES.CREATED, true, null);
 
-    const response = await request.delete(
-      apiConfig.BASE_URL +
-        apiConfig.ENDPOINTS.CUSTOMER_BY_ID(customerBody.Customer._id),
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    expect.soft(response.status()).toBe(STATUS_CODES.DELETED);
+    const getAllCustomersResponse = await customersController.getAll(token);
+    validateSchema(customersListSchema, getAllCustomersResponse.body);
+    validateResponse(getAllCustomersResponse, STATUS_CODES.OK, true, null);
+    expect
+      .soft(
+        _.omit(
+          getAllCustomersResponse.body.Customers.find(
+            (customer: ICustomer) => customer.email === customerData.email
+          ),
+          ["_id", "createdOn"]
+        )
+      )
+      .toEqual(customerData);
+  });
+  test.afterEach(async ({ customersController }) => {
+    if (!id) return;
+    const response = await customersController.delete(id, token);
+    expect.soft(response.status).toBe(STATUS_CODES.DELETED);
   });
 });
