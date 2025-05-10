@@ -1,4 +1,4 @@
-import { COUNTRIES } from "data/customers/countries.data";
+import { VALID_COUNTRIES } from "data/customers/countries.data";
 
 export const customersListSchema = {
   type: "object",
@@ -11,7 +11,7 @@ export const customersListSchema = {
           _id: { type: "string" },
           email: { type: "string" },
           name: { type: "string" },
-          country: { type: "string", enum: Object.values(COUNTRIES) },
+          country: { type: "string", enum: Object.values(VALID_COUNTRIES) },
           city: { type: "string" },
           street: { type: "string" },
           house: { type: "number" },

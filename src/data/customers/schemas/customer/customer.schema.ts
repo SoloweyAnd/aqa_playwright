@@ -1,4 +1,4 @@
-import { COUNTRIES } from "data/customers/countries.data";
+import { VALID_COUNTRIES } from "data/customers/countries.data";
 
 export const customerSchema = {
   type: "object",
@@ -9,7 +9,7 @@ export const customerSchema = {
         _id: { type: "string" },
         email: { type: "string" },
         name: { type: "string" },
-        country: { type: "string", enum: Object.values(COUNTRIES) },
+        country: { type: "string", enum: Object.values(VALID_COUNTRIES) },
         city: { type: "string" },
         street: { type: "string" },
         house: { type: "number" },
@@ -18,7 +18,18 @@ export const customerSchema = {
         createdOn: { type: "string" },
         notes: { type: "string" },
       },
-      required: ["_id", "email", "name", "country", "street", "city", "createdOn", "house", "flat", "phone"],
+      required: [
+        "_id",
+        "email",
+        "name",
+        "country",
+        "street",
+        "city",
+        "createdOn",
+        "house",
+        "flat",
+        "phone",
+      ],
     },
     IsSuccess: { type: "boolean" },
     ErrorMessage: { type: ["string", "null"] },

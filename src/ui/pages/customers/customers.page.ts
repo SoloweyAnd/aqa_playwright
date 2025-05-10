@@ -24,11 +24,11 @@ export class CustomersPage extends SalesPortalPage {
   readonly emailCell = (email: string) =>
     this.tableRowByEmail(email).locator("td:nth-child(1)");
   readonly nameCell = (email: string) =>
-    this.tableRowByEmail(email).locator("td:nth-child(1)");
+    this.tableRowByEmail(email).locator("td:nth-child(2)");
   readonly countryCell = (email: string) =>
-    this.tableRowByEmail(email).locator("td:nth-child(1)");
+    this.tableRowByEmail(email).locator("td:nth-child(3)");
   readonly createdOnCell = (email: string) =>
-    this.tableRowByEmail(email).locator("td:nth-child(1)");
+    this.tableRowByEmail(email).locator("td:nth-child(4)");
 
   readonly editButton = (email: string) =>
     this.tableRowByEmail(email).getByTitle("Edit");
