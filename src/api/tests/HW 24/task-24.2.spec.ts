@@ -5,8 +5,8 @@ import { customerSchema } from "data/customers/schemas/customer/customer.schema"
 import { invalidRequestCustomerSchema } from "data/customers/schemas/customer/invalidRequestCustomer.schema";
 import { validateSchema } from "utils/validations/schemaValidation";
 import { validateResponse } from "utils/validations/responseValidation";
-import { validCustomers } from "data/customers/validCustomers.data";
-import { invalidCustomers } from "data/customers/invalidCustomers.data";
+import { createCustomerTestDataPositive } from "data/customers/validCustomers.data";
+import { createCustomerTestDataNegative } from "data/customers/invalidCustomers.data";
 
 test.describe("[API] [Customer] [Create Customer - DDT]", () => {
   let token = "";
@@ -19,14 +19,20 @@ test.describe("[API] [Customer] [Create Customer - DDT]", () => {
     token = response.headers["authorization"];
   });
 
-  for (const { case: caseName, data } of validCustomers) {
-    test(`Positive case - ${caseName}`, async ({ customersController }) => {
+  for (const {
+    testName,
+    data,
+    isSuccess,
+    status,
+    errorMessage,
+  } of createCustomerTestDataPositive) {
+    test(`Positive case - ${testName}`, async ({ customersController }) => {
       const response = await customersController.create(data, token);
 
       const createdId = response.body.Customer._id;
 
       validateSchema(customerSchema, response.body);
-      validateResponse(response, STATUS_CODES.CREATED, true, null);
+      validateResponse(response, status, isSuccess, errorMessage);
 
       const deleteCustomer = await customersController.delete(createdId, token);
       expect.soft(deleteCustomer.status).toBe(STATUS_CODES.DELETED);
@@ -34,20 +40,17 @@ test.describe("[API] [Customer] [Create Customer - DDT]", () => {
   }
 
   for (const {
-    case: caseName,
+    testName,
     data,
-    expectedErrorMessage,
-  } of invalidCustomers) {
-    test(`Negative case - ${caseName}`, async ({ customersController }) => {
+    isSuccess,
+    status,
+    errorMessage,
+  } of createCustomerTestDataNegative) {
+    test(`Negative case - ${testName}`, async ({ customersController }) => {
       const response = await customersController.create(data, token);
 
       validateSchema(invalidRequestCustomerSchema, response.body);
-      validateResponse(
-        response,
-        STATUS_CODES.BAD_REQUEST,
-        false,
-        expectedErrorMessage
-      );
+      validateResponse(response, status, isSuccess, errorMessage);
     });
   }
 });
