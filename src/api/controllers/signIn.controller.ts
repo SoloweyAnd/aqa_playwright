@@ -4,7 +4,8 @@ import { IRequestOptions } from "types/api.types";
 import { ICredentials, ILoginResponse } from "types/credentials.types";
 
 export class SignInController {
-  private request = new RequestApi();
+  constructor(private request = new RequestApi()) {}
+
   async signIn(body: ICredentials) {
     const options: IRequestOptions = {
       url: apiConfig.ENDPOINTS.LOGIN,
