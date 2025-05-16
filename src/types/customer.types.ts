@@ -2,7 +2,11 @@ import {
   INVALID_COUNTRIES,
   VALID_COUNTRIES,
 } from "data/customers/countries.data";
-import { IResponseFields } from "./api.types";
+import {
+  customersSortField,
+  IResponseFields,
+  sortDirection,
+} from "./api.types";
 
 export interface ICustomer {
   email: string;
@@ -27,6 +31,10 @@ export interface ICustomerResponse extends IResponseFields {
 
 export interface ICustomersResponse extends IResponseFields {
   Customers: ICustomerFromResponse[];
+  sorting: {
+    sortField: customersSortField;
+    sortOrder: sortDirection;
+  };
 }
 
 export type ICustomerInTable = Pick<ICustomer, "email" | "country" | "name">;
