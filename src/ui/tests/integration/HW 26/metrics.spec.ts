@@ -1,29 +1,32 @@
-import { test, expect } from "fixtures/businessSteps.fixture";
 import { mockMetricsResponse } from "data/metrics/mock-metrics.data";
+import { expect, test } from "fixtures/businessSteps.fixture";
 
-test.describe("[UI] [Home] [Metrics]", () => {
-  test("Should display metrics", async ({
-    loginAsLocalUser,
-    homePage,
-    mock,
-  }) => {
+test.describe("[UI] [Home] Dashboard metrics", () => {
+  test.beforeEach(async ({ mock, loginAsLocalUser }) => {
     await mock.metrics(mockMetricsResponse);
     await loginAsLocalUser();
+  });
 
-    const expected = {
-      ordersThisYear: mockMetricsResponse.Metrics.orders.totalOrders.toString(),
-      newCustomers:
-        mockMetricsResponse.Metrics.customers.totalNewCustomers.toString(),
-      canceledOrders:
-        mockMetricsResponse.Metrics.orders.totalCanceledOrders.toString(),
-    };
+  test("Should display correct 'Orders this year'", async ({ homePage }) => {
+    const { totalOrders } = await homePage.getMetricValues("totalOrders");
+    expect(totalOrders).toBe(mockMetricsResponse.Metrics.orders.totalOrders);
+  });
 
-    const actual = {
-      ordersThisYear: await homePage.ordersThisYearMetric.innerText(),
-      newCustomers: await homePage.newCustomersMetric.innerText(),
-      canceledOrders: await homePage.canceledOrdersMetric.innerText(),
-    };
+  test("Should display correct 'Canceled Orders'", async ({ homePage }) => {
+    const { totalCanceledOrders } = await homePage.getMetricValues(
+      "totalCanceledOrders"
+    );
+    expect(totalCanceledOrders).toBe(
+      mockMetricsResponse.Metrics.orders.totalCanceledOrders
+    );
+  });
 
-    expect(actual).toEqual(expected);
+  test("Should display correct 'New Customers'", async ({ homePage }) => {
+    const { totalNewCustomers } = await homePage.getMetricValues(
+      "totalNewCustomers"
+    );
+    expect(totalNewCustomers).toBe(
+      mockMetricsResponse.Metrics.customers.totalNewCustomers
+    );
   });
 });

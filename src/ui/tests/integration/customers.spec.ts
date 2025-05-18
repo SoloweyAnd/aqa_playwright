@@ -7,7 +7,7 @@ test.describe("[UI] [Customers] [Table component]", async () => {
   const customer = {
     email: "aaa@gmail.com",
     name: "Anatoly Karpovich",
-    country: "USA" as VALID_COUNTRIES,
+    country: VALID_COUNTRIES.USA,
     city: "Warszawa",
     street: "asda",
     house: 321,

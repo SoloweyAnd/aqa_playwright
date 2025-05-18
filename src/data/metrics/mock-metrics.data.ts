@@ -4,15 +4,15 @@ export const mockMetricsResponse: MetricsResponse = {
   IsSuccess: true,
   Metrics: {
     orders: {
-      totalRevenue: 123456,
-      totalOrders: 999,
-      averageOrderValue: 111,
-      totalCanceledOrders: 5,
+      totalRevenue: 1111,
+      totalOrders: 2222,
+      averageOrderValue: 3333,
+      totalCanceledOrders: 4444,
       recentOrders: [],
       ordersCountPerDay: [],
     },
     customers: {
-      totalNewCustomers: 42,
+      totalNewCustomers: 5555,
       topCustomers: [],
       customerGrowth: [],
     },

@@ -10,22 +10,19 @@ export class HomePage extends SalesPortalPage {
 
   uniqueElement = this.title;
 
-  ordersThisYearMetric = this.page.locator(
-    "#total-orders-container .card-text.display-6.text-primary"
-  );
-  newCustomersMetric = this.page.locator(
-    "#total-customers-container .card-text.display-6.text-primary"
-  );
-  canceledOrdersMetric = this.page.locator(
-    "#canceled-orders-container .card-text.display-6.text-primary"
-  );
-
-  totalRevenueMetric = this.page.locator(
-    "#total-revenue-container .card-text.display-6.text-primary"
-  );
-  avgOrderValueMetric = this.page.locator(
-    "#avg-orders-value-container .card-text.display-6.text-primary"
-  );
+  readonly metricLocators = {
+    totalOrders: this.page.locator("//*[@id='total-orders-container']//p"),
+    totalNewCustomers: this.page.locator(
+      "//*[@id='total-customers-container']//p"
+    ),
+    totalCanceledOrders: this.page.locator(
+      "//*[@id='canceled-orders-container']//p"
+    ),
+    totalRevenue: this.page.locator("//*[@id='total-revenue-container']//p"),
+    averageOrderValue: this.page.locator(
+      "//*[@id='avg-orders-value-container']//p"
+    ),
+  } as const;
 
   async clickModuleButton(moduleName: ModuleName) {
     const moduleButtons: Record<ModuleName, Locator> = {
@@ -37,33 +34,18 @@ export class HomePage extends SalesPortalPage {
     await moduleButtons[moduleName].click();
   }
 
-  async getMetrics(): Promise<{
-    totalOrders: number;
-    totalNewCustomers: number;
-    totalCanceledOrders: number;
-    totalRevenue: number;
-    averageOrderValue: number;
-  }> {
-    const [
-      ordersText,
-      customersText,
-      canceledText,
-      totalRevenue,
-      avgOrderValue,
-    ] = await Promise.all([
-      this.ordersThisYearMetric.innerText(),
-      this.newCustomersMetric.innerText(),
-      this.canceledOrdersMetric.innerText(),
-      this.totalRevenueMetric.innerText(),
-      this.avgOrderValueMetric.innerText(),
-    ]);
+  async getMetricValues<T extends keyof typeof this.metricLocators>(
+    keys: T[] | T
+  ): Promise<Record<T, number>> {
+    const metrics = Array.isArray(keys) ? keys : [keys];
 
-    return {
-      totalOrders: +ordersText,
-      totalNewCustomers: +customersText,
-      totalCanceledOrders: +canceledText,
-      totalRevenue: +totalRevenue,
-      averageOrderValue: +avgOrderValue,
-    };
+    const results: Partial<Record<T, number>> = {};
+
+    for (const key of metrics) {
+      const text = await this.metricLocators[key].innerText();
+      results[key] = Number(text);
+    }
+
+    return results as Record<T, number>;
   }
 }
