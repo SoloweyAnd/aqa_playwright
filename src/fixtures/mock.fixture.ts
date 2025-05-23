@@ -1,8 +1,9 @@
-import { Page, test as base } from "@playwright/test";
+import { test as base } from "fixtures/api-services.fixture";
+import { Page } from "@playwright/test";
 import { apiConfig } from "config/api-config";
 import { STATUS_CODES } from "data/statusCodes";
 import { ICustomerResponse, ICustomersResponse } from "types/customer.types";
-import { MetricsResponse } from "types/home.types";
+import { IMetricsResponse, MetricsResponse } from "types/home.types";
 
 class Mock {
   constructor(private page: Page) {}
@@ -38,17 +39,20 @@ class Mock {
     );
   }
 
-  async metrics(
-    body: MetricsResponse,
+  async metric(
+    body: IMetricsResponse,
     statusCode: STATUS_CODES = STATUS_CODES.OK
   ) {
-    this.page.route(/\/api\/metrics(\?.*)?$/, async (route) => {
-      await route.fulfill({
-        status: statusCode,
-        contentType: "application/json",
-        body: JSON.stringify(body),
-      });
-    });
+    this.page.route(
+      apiConfig.BASE_URL + "/" + apiConfig.ENDPOINTS.METRIKS,
+      async (route) => {
+        await route.fulfill({
+          status: statusCode,
+          contentType: "application/json",
+          body: JSON.stringify(body),
+        });
+      }
+    );
   }
 }
 
