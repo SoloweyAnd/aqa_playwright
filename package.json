@@ -3,8 +3,12 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test:ui": "npx playwright test",
-    "ui-mode": "npx playwright test --ui"
+    "test:ui": "npx playwright test --project=sales-portal-ui",
+    "test:api": "npx playwright test --project=sales-portal-api",
+    "ui-mode": "npx playwright test --ui",
+    "report-html-open": "npx playwright show-report",
+    "allure-report": "allure generate allure-results -o allure-report --clean",
+    "allure-report-open": "npm run allure-report && allure open allure-report"
   },
   "keywords": [],
   "author": "",
@@ -19,6 +23,8 @@
     "@types/moment": "^2.11.29",
     "@types/node": "^22.14.1",
     "@types/numeral": "^2.0.5",
+    "@types/rimraf": "^3.0.2",
+    "allure-playwright": "^3.2.2",
     "eslint": "^9.24.0",
     "globals": "^16.0.0",
     "typescript-eslint": "^8.30.1"
@@ -26,9 +32,11 @@
   "dependencies": {
     "@faker-js/faker": "^9.7.0",
     "ajv": "^8.17.1",
+    "allure-commandline": "^2.34.0",
     "dotenv": "^16.5.0",
     "lodash": "^4.17.21",
     "moment": "^2.30.1",
-    "numeral": "^2.0.6"
+    "numeral": "^2.0.6",
+    "rimraf": "^6.0.1"
   }
 }

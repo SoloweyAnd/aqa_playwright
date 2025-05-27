@@ -15,47 +15,49 @@ import _ from "lodash";
 import { ICustomer } from "types/customer.types";
 import { validateSchema } from "utils/validations/schemaValidation";
 import { validateResponse } from "utils/validations/responseValidation";
+import { TAGS } from "data/tags.data";
 
 test.describe("[API] [Customer] [Get all customers]", () => {
   let token = "";
   let id = "";
 
-  test("Verify created customer in list", async ({
-    customersController,
-    signInController,
-  }) => {
-    const response = await signInController.signIn({
-      username: USER_LOGIN,
-      password: USER_PASSWORD,
-    });
+  test(
+    "Verify created customer in list",
+    { tag: [TAGS.SMOKE, TAGS.API, TAGS.REGRESSION] },
+    async ({ customersController, signInController }) => {
+      const response = await signInController.signIn({
+        username: USER_LOGIN,
+        password: USER_PASSWORD,
+      });
 
-    const { status, headers } = response;
-    token = headers["authorization"];
-    expect.soft(status).toBe(STATUS_CODES.OK);
+      const { status, headers } = response;
+      token = headers["authorization"];
+      expect.soft(status).toBe(STATUS_CODES.OK);
 
-    const customerData = generateCustomerData();
-    const customerResponse = await customersController.create(
-      customerData,
-      token
-    );
-    id = customerResponse.body.Customer._id;
+      const customerData = generateCustomerData();
+      const customerResponse = await customersController.create(
+        customerData,
+        token
+      );
+      id = customerResponse.body.Customer._id;
 
-    validateResponse(customerResponse, STATUS_CODES.CREATED, true, null);
+      validateResponse(customerResponse, STATUS_CODES.CREATED, true, null);
 
-    const getAllCustomersResponse = await customersController.getAll(token);
-    validateSchema(customersListSchema, getAllCustomersResponse.body);
-    validateResponse(getAllCustomersResponse, STATUS_CODES.OK, true, null);
-    expect
-      .soft(
-        _.omit(
-          getAllCustomersResponse.body.Customers.find(
-            (customer: ICustomer) => customer.email === customerData.email
-          ),
-          ["_id", "createdOn"]
+      const getAllCustomersResponse = await customersController.getAll(token);
+      validateSchema(customersListSchema, getAllCustomersResponse.body);
+      validateResponse(getAllCustomersResponse, STATUS_CODES.OK, true, null);
+      expect
+        .soft(
+          _.omit(
+            getAllCustomersResponse.body.Customers.find(
+              (customer: ICustomer) => customer.email === customerData.email
+            ),
+            ["_id", "createdOn"]
+          )
         )
-      )
-      .toEqual(customerData);
-  });
+        .toEqual(customerData);
+    }
+  );
 
   test.afterEach(async ({ customersController }) => {
     if (!id) return;

@@ -1,27 +1,37 @@
 import { STATUS_CODES } from "data/statusCodes";
+import { TAGS } from "data/tags.data";
 import { expect, test } from "fixtures/ui-services.fixture";
 
 test.describe("[E2E] [UI] [Customers] [Create]", () => {
   let id = "";
   let token = "";
-  test("Create customer with smoke data", async ({
-    signInUiService,
-    homeUiService,
-    customersUiService,
-    addNewCustomerUiService,
-    customersController,
-  }) => {
-    token = await signInUiService.signInAsLocalUser();
-    await homeUiService.openModule("Customers");
-    await customersUiService.openAddNewCustomerPage();
-    const createdCustomer = await addNewCustomerUiService.create();
-    const response = await customersController.getById(
-      createdCustomer._id,
-      token
-    );
-    id = createdCustomer._id;
-    expect(response.status).toBe(STATUS_CODES.OK);
-  });
+  test(
+    "Create customer with smoke data",
+    { tag: [TAGS.UI, TAGS.SMOKE, TAGS.REGRESSION] },
+    async ({
+      homeUiService,
+      customersUiService,
+      addNewCustomerUiService,
+      customersController,
+      page,
+    }) => {
+      await homeUiService.openAsLoggedInUser();
+      token = (await page.context().cookies()).find(
+        (c) => c.name === "Authorization"
+      )!.value;
+      await homeUiService.openModule("Customers");
+      await customersUiService.openAddNewCustomerPage();
+      const createdCustomer = await addNewCustomerUiService.create();
+      const response = await customersController.getById(
+        createdCustomer._id,
+        token
+      );
+      id = createdCustomer._id;
+      test.step("Check that customer is created via API", async () => {
+        expect(response.status).toBe(STATUS_CODES.OK);
+      });
+    }
+  );
 
   test.afterEach(async ({ customersController }) => {
     await customersController.delete(id, token);

@@ -7,6 +7,7 @@ import { validateSchema } from "utils/validations/schemaValidation";
 import { validateResponse } from "utils/validations/responseValidation";
 import { createCustomerTestDataPositive } from "data/customers/validCustomers.data";
 import { createCustomerTestDataNegative } from "data/customers/invalidCustomers.data";
+import { TAGS } from "data/tags.data";
 
 test.describe("[API] [Customer] [Create Customer - DDT]", () => {
   let token = "";
@@ -26,17 +27,24 @@ test.describe("[API] [Customer] [Create Customer - DDT]", () => {
     status,
     errorMessage,
   } of createCustomerTestDataPositive) {
-    test(`Positive case - ${testName}`, async ({ customersController }) => {
-      const response = await customersController.create(data, token);
+    test(
+      `Positive case - ${testName}`,
+      { tag: [TAGS.API, TAGS.REGRESSION] },
+      async ({ customersController }) => {
+        const response = await customersController.create(data, token);
 
-      const createdId = response.body.Customer._id;
+        const createdId = response.body.Customer._id;
 
-      validateSchema(customerSchema, response.body);
-      validateResponse(response, status, isSuccess, errorMessage);
+        validateSchema(customerSchema, response.body);
+        validateResponse(response, status, isSuccess, errorMessage);
 
-      const deleteCustomer = await customersController.delete(createdId, token);
-      expect.soft(deleteCustomer.status).toBe(STATUS_CODES.DELETED);
-    });
+        const deleteCustomer = await customersController.delete(
+          createdId,
+          token
+        );
+        expect.soft(deleteCustomer.status).toBe(STATUS_CODES.DELETED);
+      }
+    );
   }
 
   for (const {
@@ -46,11 +54,15 @@ test.describe("[API] [Customer] [Create Customer - DDT]", () => {
     status,
     errorMessage,
   } of createCustomerTestDataNegative) {
-    test(`Negative case - ${testName}`, async ({ customersController }) => {
-      const response = await customersController.create(data, token);
+    test(
+      `Negative case - ${testName}`,
+      { tag: [TAGS.API, TAGS.REGRESSION] },
+      async ({ customersController }) => {
+        const response = await customersController.create(data, token);
 
-      validateSchema(invalidRequestCustomerSchema, response.body);
-      validateResponse(response, status, isSuccess, errorMessage);
-    });
+        validateSchema(invalidRequestCustomerSchema, response.body);
+        validateResponse(response, status, isSuccess, errorMessage);
+      }
+    );
   }
 });

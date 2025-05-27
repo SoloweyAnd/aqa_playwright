@@ -10,6 +10,7 @@
 //   - завалидировать сумму
 
 import test, { expect, Page } from "@playwright/test";
+import { TAGS } from "data/tags.data";
 
 test.describe("[UI] [Shopping Cart] [E2E]", () => {
   const products = [
@@ -30,48 +31,56 @@ test.describe("[UI] [Shopping Cart] [E2E]", () => {
     "5-PERCENT-FOR-UTILS",
   ];
 
-  test("Successful checkout with 5 products", async ({ page }) => {
-    await page.goto("https://anatoly-karpovich.github.io/demo-shopping-cart/");
+  test(
+    "Successful checkout with 5 products",
+    { tag: [TAGS.UI] },
+    async ({ page }) => {
+      await page.goto(
+        "https://anatoly-karpovich.github.io/demo-shopping-cart/"
+      );
 
-    for (const product of products) {
-      await getAddToCartButton(product, page).click();
+      for (const product of products) {
+        await getAddToCartButton(product, page).click();
+      }
+
+      const prices = await Promise.all(
+        products.map((p) => getProductPrice(page, p))
+      );
+      const total = prices.reduce((sum, price) => sum + price, 0);
+
+      await expect(page.locator("#badge-number")).toHaveText(
+        products.length.toString()
+      );
+      await page.getByRole("button", { name: "Shopping Cart" }).click();
+      await expect(page.locator("#total-price")).toHaveText(`$${total}.00`);
+
+      await expect(page.locator("h5")).toHaveText(products);
+
+      const amounts = page.locator(
+        '[data-id="product-amount-in-shopping-cart"]'
+      );
+      await expect.soft(amounts).toHaveCount(products.length);
+      for (let i = 0; i < products.length; i++) {
+        await expect(amounts.nth(i)).toHaveText("1");
+      }
+
+      for (const promo of promocodes) {
+        await applyPromoCode(promo, page);
+      }
+
+      const totalDiscountPercent = await calculateTotalDiscount(page);
+      const finalPriceAfterDiscount = total * (1 - totalDiscountPercent / 100);
+      const discountAmount = total - finalPriceAfterDiscount;
+      await expect(page.locator("#total-price")).toHaveText(
+        `$${finalPriceAfterDiscount.toFixed(2)} (-$${discountAmount})`
+      );
+
+      await page.locator("#continue-to-checkout-button").click();
+      await expect(page.locator("span.text-muted")).toHaveText(
+        `$${finalPriceAfterDiscount.toFixed(2)}`
+      );
     }
-
-    const prices = await Promise.all(
-      products.map((p) => getProductPrice(page, p))
-    );
-    const total = prices.reduce((sum, price) => sum + price, 0);
-
-    await expect(page.locator("#badge-number")).toHaveText(
-      products.length.toString()
-    );
-    await page.getByRole("button", { name: "Shopping Cart" }).click();
-    await expect(page.locator("#total-price")).toHaveText(`$${total}.00`);
-
-    await expect(page.locator("h5")).toHaveText(products);
-
-    const amounts = page.locator('[data-id="product-amount-in-shopping-cart"]');
-    await expect.soft(amounts).toHaveCount(products.length);
-    for (let i = 0; i < products.length; i++) {
-      await expect(amounts.nth(i)).toHaveText("1");
-    }
-
-    for (const promo of promocodes) {
-      await applyPromoCode(promo, page);
-    }
-
-    const totalDiscountPercent = await calculateTotalDiscount(page);
-    const finalPriceAfterDiscount = total * (1 - totalDiscountPercent / 100);
-    const discountAmount = total - finalPriceAfterDiscount;
-    await expect(page.locator("#total-price")).toHaveText(
-      `$${finalPriceAfterDiscount.toFixed(2)} (-$${discountAmount})`
-    );
-
-    await page.locator("#continue-to-checkout-button").click();
-    await expect(page.locator("span.text-muted")).toHaveText(
-      `$${finalPriceAfterDiscount.toFixed(2)}`
-    );
-  });
+  );
 
   function getAddToCartButton(productName: string, page: Page) {
     return page

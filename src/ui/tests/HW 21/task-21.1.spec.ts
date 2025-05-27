@@ -6,10 +6,12 @@
 //   - click on login button method
 
 import _ from "lodash";
-import { expect, test } from "fixtures/businessSteps.fixture";
+import { expect, test } from "fixtures/ui-services.fixture";
+import { TAGS } from "data/tags.data";
 
-test.describe("[UI] [Sales Portal] [E2E]", async () => {
-  test("Should login", async ({ loginAsLocalUser }) => {
-    await loginAsLocalUser();
+test.describe("[UI] [Sales Portal] [E2E]", { tag: [TAGS.UI] }, async () => {
+  test("Should login", async ({ homeUiService }) => {
+    await homeUiService.openAsLoggedInUser();
   });
 });
+2;

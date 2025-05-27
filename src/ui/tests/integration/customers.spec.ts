@@ -1,6 +1,7 @@
 import { apiConfig } from "config/api-config";
 import { VALID_COUNTRIES } from "data/customers/countries.data";
-import { expect, test } from "fixtures/businessSteps.fixture";
+import { TAGS } from "data/tags.data";
+import { expect, test } from "fixtures/ui-services.fixture";
 import { customersSortField, sortDirection } from "types/api.types";
 
 test.describe("[UI] [Customers] [Table component]", async () => {
@@ -28,48 +29,51 @@ test.describe("[UI] [Customers] [Table component]", async () => {
 
   fields.forEach((field) => {
     directions.forEach((direction) => {
-      test(`Should display correct sorting for ${field} field and ${direction} direction`, async ({
-        loginAsLocalUser,
-        customersPage,
-        mock,
-      }) => {
-        await mock.customers({
-          Customers: [
-            {
-              ...customer,
+      test(
+        `Should display correct sorting for ${field} field and ${direction} direction`,
+        {
+          tag: [TAGS.UI],
+        },
+        async ({ homeUiService, customersPage, mock }) => {
+          await mock.customers({
+            Customers: [
+              {
+                ...customer,
+              },
+            ],
+            ErrorMessage: null,
+            IsSuccess: true,
+            sorting: {
+              sortField: field,
+              sortOrder: direction,
             },
-          ],
-          ErrorMessage: null,
-          IsSuccess: true,
-          sorting: {
-            sortField: field,
-            sortOrder: direction,
-          },
-        });
+          });
 
-        await loginAsLocalUser();
+          await homeUiService.openAsLoggedInUser();
 
-        await customersPage.open();
-        await customersPage.waitForOpened();
-        await expect(customersPage.table).toHaveScreenshot();
-      });
+          await customersPage.open();
+          await customersPage.waitForOpened();
+          await expect(customersPage.table).toHaveScreenshot();
+        }
+      );
     });
   });
 
-  test("Should send correct query clicking on Created On header", async ({
-    loginAsLocalUser,
-    customersPage,
-  }) => {
-    await loginAsLocalUser();
-    await customersPage.open();
-    await customersPage.waitForOpened();
-    const request = await customersPage.interceptRequest(
-      apiConfig.ENDPOINTS.CUSTOMERS,
-      customersPage.clickTableHeader.bind(customersPage),
-      "createdOn"
-    );
-    expect(request.url()).toBe(
-      `${apiConfig.BASE_URL}/${apiConfig.ENDPOINTS.CUSTOMERS}?sortField=createdOn&sortOrder=asc`
-    );
-  });
+  test(
+    "Should send correct query clicking on Created On header",
+    { tag: [TAGS.UI] },
+    async ({ homeUiService, customersPage }) => {
+      await homeUiService.openAsLoggedInUser();
+      await customersPage.open();
+      await customersPage.waitForOpened();
+      const request = await customersPage.interceptRequest(
+        apiConfig.ENDPOINTS.CUSTOMERS,
+        customersPage.clickTableHeader.bind(customersPage),
+        "createdOn"
+      );
+      expect(request.url()).toBe(
+        `${apiConfig.BASE_URL}/${apiConfig.ENDPOINTS.CUSTOMERS}?sortField=createdOn&sortOrder=asc&page=1&limit=10`
+      );
+    }
+  );
 });

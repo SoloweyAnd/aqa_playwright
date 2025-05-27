@@ -1,6 +1,7 @@
 import { ICustomer } from "types/customer.types";
 import { SalesPortalPage } from "../salesPortal.page";
 import { DeleteModalPage } from "../modals/customers/delete.modal.page";
+import { logStep } from "utils/reporter.utils";
 
 export class EditCustomerPage extends SalesPortalPage {
   //Modals
@@ -63,14 +64,17 @@ export class EditCustomerPage extends SalesPortalPage {
     return { email, name, country, city, street, house, flat, phone, notes };
   }
 
+  @logStep("Click Save Changes")
   async clickSaveChanges() {
     await this.saveChangesButton.click();
   }
 
+  @logStep("Click Delete Customer")
   async clickDeleteCustomer() {
     await this.deleteCustomerButton.click();
   }
 
+  @logStep("Get Form Errors")
   async getFormErrors() {
     return {
       email: (await this.emailError.isVisible())

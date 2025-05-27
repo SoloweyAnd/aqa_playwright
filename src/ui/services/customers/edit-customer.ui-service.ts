@@ -18,12 +18,17 @@ export class EditCustomerUiService {
   async edit(customData?: ICustomer) {
     const data = generateCustomerData(customData);
     await this.editCustomerPage.fillInputs(data);
-    const response = await this.editCustomerPage.interceptResponse<ICustomerResponse, any>(
+    const response = await this.editCustomerPage.interceptResponse<
+      ICustomerResponse,
+      any
+    >(
       apiConfig.ENDPOINTS.CUSTOMERS,
       this.editCustomerPage.clickSaveChanges.bind(this.editCustomerPage)
     );
     expect(response.status).toBe(STATUS_CODES.OK);
-    expect(_.omit(response.body.Customer, "_id", "createdOn")).toEqual({ ...data });
+    expect(_.omit(response.body.Customer, "_id", "createdOn")).toEqual({
+      ...data,
+    });
     await this.customersPage.waitForOpened();
     return response.body.Customer;
   }

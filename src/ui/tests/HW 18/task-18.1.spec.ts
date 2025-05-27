@@ -4,6 +4,7 @@
 // //     Username: обязательное, от 3 до 40 символов включительно, запрещены префиксные/постфиксные пробелы, как и имя состоящее из одних пробелов
 // //     Password: обязательное, от 8 до 20 символов включительно, необходима хотя бы одна буква в верхнем и нижнем регистрах, пароль из одних пробелов запрещен
 import { test, expect } from "@playwright/test";
+import { TAGS } from "data/tags.data";
 
 test.describe("[UI] [1.1. Smoke] Registration", () => {
   const validCredentials = {
@@ -38,36 +39,44 @@ test.describe("[UI] [1.1. Smoke] Registration", () => {
     );
   });
 
-  test("Register with invalid user name", async ({ page }) => {
-    await submitUser(
-      page,
-      invalidUserCredentials.username,
-      validCredentials.password
-    );
-    await expect(page.locator("#errorMessageOnRegister")).toContainText(
-      "Username should contain at least 3 characters"
-    );
-  });
+  test(
+    "Register with invalid user name",
+    { tag: [TAGS.UI] },
+    async ({ page }) => {
+      await submitUser(
+        page,
+        invalidUserCredentials.username,
+        validCredentials.password
+      );
+      await expect(page.locator("#errorMessageOnRegister")).toContainText(
+        "Username should contain at least 3 characters"
+      );
+    }
+  );
 
-  test("Register with invalid password", async ({ page }) => {
-    await submitUser(
-      page,
-      validCredentials.username,
-      invalidUserCredentials.password
-    );
-    await expect(page.locator("#errorMessageOnRegister")).toContainText(
-      "Password should contain at least 8 characters"
-    );
-  });
+  test(
+    "Register with invalid password",
+    { tag: [TAGS.UI] },
+    async ({ page }) => {
+      await submitUser(
+        page,
+        validCredentials.username,
+        invalidUserCredentials.password
+      );
+      await expect(page.locator("#errorMessageOnRegister")).toContainText(
+        "Password should contain at least 8 characters"
+      );
+    }
+  );
 
-  test("Register with empty username", async ({ page }) => {
+  test("Register with empty username", { tag: [TAGS.UI] }, async ({ page }) => {
     await submitUser(page, "", validCredentials.password);
     await expect(page.locator("#errorMessageOnRegister")).toContainText(
       "Username is required"
     );
   });
 
-  test("Register with empty password", async ({ page }) => {
+  test("Register with empty password", { tag: [TAGS.UI] }, async ({ page }) => {
     await submitUser(page, validCredentials.username, "");
     await expect(page.locator("#errorMessageOnRegister")).toContainText(
       "Password is required"

@@ -1,9 +1,10 @@
-import { ICustomer, ICustomerInTable } from "types/customer.types";
+import { ICustomerInTable } from "types/customer.types";
 import { SalesPortalPage } from "../salesPortal.page";
 import { VALID_COUNTRIES } from "data/customers/countries.data";
 import { DeleteModalPage } from "../modals/customers/delete.modal.page";
 import { customersSortField } from "types/api.types";
 import { FilterModal } from "../modals/customers/filter.modal";
+import { logStep } from "utils/reporter.utils";
 
 export class CustomersPage extends SalesPortalPage {
   //Modals
@@ -60,18 +61,22 @@ export class CustomersPage extends SalesPortalPage {
     });
   }
 
+  @logStep("Click on Add New Customer button")
   async clickAddNewCustomer() {
     await this.addNewCustomerButton.click();
   }
 
+  @logStep("Click on Delete Customer button")
   async clickDeleteCustomer(customerEmail: string) {
     await this.deleteButton(customerEmail).click();
   }
 
+  @logStep("Click on Filter button")
   async clickFilter() {
     await this.filterButton.click();
   }
 
+  @logStep("Click on Table Action button")
   async clickTableAction(
     customerEmail: string,
     action: "edit" | "details" | "delete"
@@ -85,6 +90,7 @@ export class CustomersPage extends SalesPortalPage {
     await buttons[action].click();
   }
 
+  @logStep("Get customer data")
   async getCustomerData(customerEmail: string): Promise<ICustomerInTable> {
     const [email, name, country] = await this.tableRowByEmail(customerEmail)
       .locator("td")
@@ -96,38 +102,40 @@ export class CustomersPage extends SalesPortalPage {
     };
   }
 
+  @logStep("Get table data")
   async getTabeData() {
     const tableData: Array<ICustomerInTable> = [];
 
     const rows = await this.tableRow.all();
     for (const row of rows) {
-      const [email, name, country, createdOn] = await row
-        .locator("td")
-        .allInnerTexts();
+      const [email, name, country] = await row.locator("td").allInnerTexts();
       tableData.push({
         email,
         name,
         country: country as VALID_COUNTRIES,
-        //createdOn
       });
     }
     return tableData;
   }
 
+  @logStep("Fill search input")
   async fillSearch(value: string | number) {
     await this.searchInput.fill(String(value));
   }
 
+  @logStep("Click on Search button")
   async clickSearch() {
     await this.searchButton.click();
   }
 
+  @logStep("Search for customer")
   async search(value: string | number) {
     await this.fillSearch(value);
     await this.clickSearch();
     await this.waitForOpened();
   }
 
+  @logStep("Click on Table Header")
   async clickTableHeader(header: customersSortField) {
     switch (header) {
       case "email":
