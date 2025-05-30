@@ -7,6 +7,7 @@ import {
   ICustomerResponse,
   ICustomersResponse,
 } from "types/customer.types";
+import { logStep } from "utils/reporter.utils";
 import { convertRequestParams } from "utils/requestParams";
 
 export class CustomersController {
@@ -16,6 +17,7 @@ export class CustomersController {
     this.request = new RequestApi(context);
   }
 
+  @logStep("Create customer")
   async create(body: ICustomer, token: string) {
     const options: IRequestOptions = {
       baseURL: apiConfig.BASE_URL,
@@ -30,6 +32,7 @@ export class CustomersController {
     return await this.request.send<ICustomerResponse>(options);
   }
 
+  @logStep("Get customer by id")
   async getById(id: string, token: string) {
     const options: IRequestOptions = {
       baseURL: apiConfig.BASE_URL,
@@ -43,6 +46,7 @@ export class CustomersController {
     return await this.request.send<ICustomerResponse>(options);
   }
 
+  @logStep("Get all customers")
   async getAll(token: string, params?: Record<string, string>) {
     const options: IRequestOptions = {
       baseURL: apiConfig.BASE_URL,
@@ -58,6 +62,7 @@ export class CustomersController {
     return await this.request.send<ICustomersResponse>(options);
   }
 
+  @logStep("Update customer")
   async update(id: string, body: ICustomer, token: string) {
     const options: IRequestOptions = {
       baseURL: apiConfig.BASE_URL,
@@ -72,6 +77,7 @@ export class CustomersController {
     return await this.request.send<ICustomerResponse>(options);
   }
 
+  @logStep("Delete customer")
   async delete(id: string, token: string) {
     const options: IRequestOptions = {
       baseURL: apiConfig.BASE_URL,

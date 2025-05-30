@@ -1,17 +1,20 @@
 import { IProduct } from "types/products.types";
 import { SalesPortalPage } from "../salesPortal.page";
+import { logStep } from "utils/reporter.utils";
 
 export class AddNewProductPage extends SalesPortalPage {
-  nameInput = this.page.locator("#inputName");
-  priceInput = this.page.locator("#inputPrice");
-  amountInput = this.page.locator("#inputAmount");
-  notesInput = this.page.locator("#textareaNotes");
-  manufacturerInput = this.page.locator("#inputManufacturer");
+  private readonly nameInput = this.page.locator("#inputName");
+  private readonly priceInput = this.page.locator("#inputPrice");
+  private readonly amountInput = this.page.locator("#inputAmount");
+  private readonly notesInput = this.page.locator("#textareaNotes");
+  private readonly manufacturerInput = this.page.locator("#inputManufacturer");
 
-  saveNewProductButton = this.page.locator("#save-new-product");
+  private readonly saveNewProductButton =
+    this.page.locator("#save-new-product");
 
   uniqueElement = this.saveNewProductButton;
 
+  @logStep("Fill new product inputs")
   async fillInputs(product: Partial<IProduct>) {
     product.name && (await this.nameInput.fill(product.name));
     product.manufacturer &&
@@ -21,6 +24,7 @@ export class AddNewProductPage extends SalesPortalPage {
     product.notes && (await this.notesInput.fill(product.notes));
   }
 
+  @logStep("Click save new product button")
   async clickSave() {
     await this.saveNewProductButton.click();
   }

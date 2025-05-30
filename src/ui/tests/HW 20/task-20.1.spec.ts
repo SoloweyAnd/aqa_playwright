@@ -11,6 +11,7 @@
 //   Password: обязательное
 
 import test, { expect } from "@playwright/test";
+import { TAGS } from "data/tags.data";
 
 interface IRegistrationTestData {
   testName: string;
@@ -98,15 +99,19 @@ async function submitRegistrationForm(
   return form;
 }
 
-test.describe("[UI] [Registration] Negative scenarios", () => {
-  registrationInvalidTestData.forEach(
-    ({ testName, username, password, message }) => {
-      test(testName, async ({ page }) => {
-        await page.goto(URL);
-        await page.locator(SELECTORS.registerLink).click();
-        const form = await submitRegistrationForm(page, username, password);
-        await expect(form.locator(SELECTORS.error)).toHaveText(message);
-      });
-    }
-  );
-});
+test.describe(
+  "[UI] [Registration] Negative scenarios",
+  { tag: [TAGS.UI] },
+  () => {
+    registrationInvalidTestData.forEach(
+      ({ testName, username, password, message }) => {
+        test(testName, async ({ page }) => {
+          await page.goto(URL);
+          await page.locator(SELECTORS.registerLink).click();
+          const form = await submitRegistrationForm(page, username, password);
+          await expect(form.locator(SELECTORS.error)).toHaveText(message);
+        });
+      }
+    );
+  }
+);

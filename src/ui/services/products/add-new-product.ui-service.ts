@@ -6,6 +6,7 @@ import { IProduct, IProductResponse } from "types/products.types";
 import { AddNewProductPage } from "ui/pages/products/addNewProduct.page";
 import { ProductsPage } from "ui/pages/products/products.page";
 import { generateProductData } from "data/products/generateProduct.data";
+import { logStep } from "utils/reporter.utils";
 
 export class AddNewProductUiService {
   private addNewProductPage: AddNewProductPage;
@@ -15,6 +16,7 @@ export class AddNewProductUiService {
     this.productsPage = new ProductsPage(page);
   }
 
+  @logStep("Create new Product on Add New Product Page")
   async create(productData?: IProduct) {
     const data = generateProductData(productData);
     await this.addNewProductPage.fillInputs(data);

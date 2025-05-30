@@ -6,6 +6,7 @@
 //  - Проверить скриншотом боковое навигационное меню с выбранной страницей Home
 
 import test, { expect } from "@playwright/test";
+import { TAGS } from "data/tags.data";
 
 test.describe("[UI] [anatoly-karpovich] Task-2", () => {
   const credentials = {
@@ -30,7 +31,7 @@ test.describe("[UI] [anatoly-karpovich] Task-2", () => {
     );
   }
 
-  test("Login with valid credentials", async ({ page }) => {
+  test("Login with valid credentials", { tag: [TAGS.UI] }, async ({ page }) => {
     await submitUser(page, credentials.email, credentials.password);
 
     await expect(

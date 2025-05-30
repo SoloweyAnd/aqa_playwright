@@ -1,4 +1,4 @@
-import { IUserFromResponse } from "types/user.types";
+import { ILoginFromResponse } from "types/user.types";
 import { IResponseFields } from "./api.types";
 
 export interface ICredentials {
@@ -7,5 +7,5 @@ export interface ICredentials {
 }
 
 export interface ILoginResponse extends IResponseFields {
-  User: IUserFromResponse;
+  User: ILoginFromResponse;
 }

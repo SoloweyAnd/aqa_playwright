@@ -3,62 +3,70 @@ import { SalesPortalPage } from "../salesPortal.page";
 import { productsSortField } from "types/api.types";
 import { MANUFACTURERS } from "data/products/manufacturers.data";
 import numeral from "numeral";
+import { logStep } from "utils/reporter.utils";
 
 export class ProductsPage extends SalesPortalPage {
   //Header menu
-  readonly addNewProductButton = this.page.getByRole("button", {
+  private readonly addNewProductButton = this.page.getByRole("button", {
     name: "+ Add Product",
   });
   //Table
-  readonly table = this.page.locator("#table-container");
+  private readonly table = this.page.locator("#table-products");
   //Search
-  readonly searchInput = this.page.locator('input[type="search"]');
-  readonly searchButton = this.page.locator("#search-products");
-  readonly chipButton = this.page.locator(".chip");
-  readonly searchChipButton = this.page.locator(
+  private readonly searchInput = this.page.locator('input[type="search"]');
+  private readonly searchButton = this.page.locator("#search-products");
+  private readonly chipButton = this.page.locator(".chip");
+  private readonly searchChipButton = this.page.locator(
     'div[data-chip-products="search"]'
   );
 
   //Table headers
-  readonly tableHeader = this.page.locator("#table-container th div[current]");
-  readonly priceHeader = this.tableHeader.filter({ hasText: "Price" });
-  readonly nameHeader = this.tableHeader.filter({ hasText: "Name" });
-  readonly manufacturerHeader = this.tableHeader.filter({
+  private readonly tableHeader = this.page.locator(
+    "#table-container th div[current]"
+  );
+  private readonly priceHeader = this.tableHeader.filter({ hasText: "Price" });
+  private readonly nameHeader = this.tableHeader.filter({ hasText: "Name" });
+  private readonly manufacturerHeader = this.tableHeader.filter({
     hasText: "Manufacturer",
   });
-  readonly createdOnHeader = this.tableHeader.filter({ hasText: "Created On" });
+  private readonly createdOnHeader = this.tableHeader.filter({
+    hasText: "Created On",
+  });
 
   //Table Body
-  readonly tableRow = this.page.locator("#table-container tbody tr");
-  readonly tableRowByName = (name: string) =>
+  private readonly tableRow = this.page.locator("#table-container tbody tr");
+  private readonly tableRowByName = (name: string) =>
     this.tableRow.filter({ has: this.page.getByText(name) });
 
-  readonly nameCell = (name: string) =>
+  private readonly nameCell = (name: string) =>
     this.tableRowByName(name).locator("td:nth-child(1)");
-  readonly priceCell = (name: string) =>
+  private readonly priceCell = (name: string) =>
     this.tableRowByName(name).locator("td:nth-child(2)");
-  readonly manufacturerCell = (name: string) =>
+  private readonly manufacturerCell = (name: string) =>
     this.tableRowByName(name).locator("td:nth-child(3)");
-  readonly createdOnCell = (name: string) =>
+  private readonly createdOnCell = (name: string) =>
     this.tableRowByName(name).locator("td:nth-child(4)");
 
-  readonly editButton = (name: string) =>
+  private readonly editButton = (name: string) =>
     this.tableRowByName(name).getByTitle("Edit");
-  readonly deleteButton = (name: string) =>
+  private readonly deleteButton = (name: string) =>
     this.tableRowByName(name).getByTitle("Delete");
-  readonly detailsButton = (name: string) =>
+  private readonly detailsButton = (name: string) =>
     this.tableRowByName(name).getByTitle("Details");
 
   readonly uniqueElement = this.addNewProductButton;
 
+  @logStep("Click 'Add New Product' button")
   async clickAddNewProduct() {
     await this.addNewProductButton.click();
   }
 
+  @logStep("Click 'Delete' button")
   async clickDeleteProduct(productName: string) {
     await this.deleteButton(productName).click();
   }
 
+  @logStep("Click 'Edit' button")
   async clickTableAction(
     productName: string,
     action: "edit" | "details" | "delete"
@@ -72,6 +80,7 @@ export class ProductsPage extends SalesPortalPage {
     await buttons[action].click();
   }
 
+  @logStep("Get product data")
   async getProductData(productName: string): Promise<IProductInTable> {
     const [name, price, manufacturer] = await this.tableRowByName(productName)
       .locator("td")
@@ -83,6 +92,7 @@ export class ProductsPage extends SalesPortalPage {
     };
   }
 
+  @logStep("Get table data")
   async getTabelData() {
     const tableData: Array<IProductInTable> = [];
 
@@ -100,20 +110,24 @@ export class ProductsPage extends SalesPortalPage {
     return tableData;
   }
 
+  @logStep("Fill search input")
   async fillSearch(value: string | number) {
     await this.searchInput.fill(String(value));
   }
 
+  @logStep("Click 'Search' button")
   async clickSearch() {
     await this.searchButton.click();
   }
 
+  @logStep("Search product")
   async search(value: string | number) {
     await this.fillSearch(value);
     await this.clickSearch();
     await this.waitForOpened();
   }
 
+  @logStep("Click table header")
   async clickTableHeader(header: productsSortField) {
     switch (header) {
       case "price":

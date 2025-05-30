@@ -8,6 +8,7 @@ import {
   IProductsResponse,
 } from "types/products.types";
 import { convertRequestParams } from "utils/requestParams";
+import { logStep } from "utils/reporter.utils";
 
 export class ProductController {
   private request: RequestApi;
@@ -16,6 +17,7 @@ export class ProductController {
     this.request = new RequestApi(context);
   }
 
+  @logStep("Create product")
   async create(body: IProduct, token: string) {
     const options: IRequestOptions = {
       baseURL: apiConfig.BASE_URL,
@@ -30,6 +32,7 @@ export class ProductController {
     return await this.request.send<IProductResponse>(options);
   }
 
+  @logStep("Get product by id")
   async getById(id: string, token: string) {
     const options: IRequestOptions = {
       baseURL: apiConfig.BASE_URL,
@@ -43,6 +46,7 @@ export class ProductController {
     return await this.request.send<IProductResponse>(options);
   }
 
+  @logStep("Get all products")
   async getAll(token: string, params?: Record<string, string>) {
     const options: IRequestOptions = {
       baseURL: apiConfig.BASE_URL,
@@ -58,6 +62,7 @@ export class ProductController {
     return await this.request.send<IProductsResponse>(options);
   }
 
+  @logStep("Delete product by id")
   async delete(id: string, token: string) {
     const options: IRequestOptions = {
       baseURL: apiConfig.BASE_URL,
@@ -71,4 +76,3 @@ export class ProductController {
     return await this.request.send<null>(options);
   }
 }
-1;
